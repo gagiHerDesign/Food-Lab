@@ -1,0 +1,483 @@
+:root {
+  --bg-color: #f0f2f5;
+  --text-color: #333;
+  --wheel-size: 500px; /* 圓圈的直徑 */
+  --wheel-radius: 250px; /* 半徑 */
+  --anchor-offset: 80px; /* 圓心離邊界的距離 */
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: 'Lato', sans-serif;
+  overflow-x: hidden;
+}
+
+/* --- Screen 1: Dashboard --- */
+.dashboard-screen {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 輪盤定位點 (Anchor) */
+.wheel-anchor {
+  position: absolute;
+  top: 50%;
+  width: 0;
+  height: 0;
+  z-index: 10;
+}
+
+.left-anchor {
+  left: var(--anchor-offset);
+}
+
+.right-anchor {
+  right: var(--anchor-offset);
+}
+
+/* 輪盤容器 (實際旋轉的部分) */
+.wheel-container {
+  position: absolute;
+  width: var(--wheel-size);
+  height: var(--wheel-size);
+  /* 將容器中心對齊定位點 */
+  top: calc(var(--wheel-size) / -2); 
+  left: calc(var(--wheel-size) / -2);
+  border-radius: 50%;
+  border: 1px solid rgba(0,0,0,0.1); /* 淡淡的輔助線 */
+  transition: transform 1s cubic-bezier(0.23, 1, 0.32, 1);
+  
+  /* 拖曳游標設定 */
+  cursor: grab;
+}
+
+.wheel-container:active {
+  cursor: grabbing;
+}
+
+/* 左側文字項目 - 結構調整 */
+.text-item {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 200px; /* 加寬以容納膠囊 */
+  height: 40px;
+  margin-top: -20px; /* 垂直居中 */
+  transform-origin: 0% 50%; /* 以圓心為旋轉軸 */
+  padding-left: var(--wheel-radius); /* 將內容推到圓周外 */
+  
+  display: flex;
+  align-items: center;
+  pointer-events: none; /* 讓點擊事件穿透到 span，避免干擾拖曳計算 */
+}
+
+/* 文字的膠囊樣式 (黑色背景、白色文字) */
+.text-item span {
+  display: inline-block;
+  background-color: #000000;
+  color: #ffffff;
+  padding: 8px 20px;
+  border-radius: 50px;
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  transition: transform 0.3s, background-color 0.3s;
+  pointer-events: auto; /* 恢復文字可被點擊 */
+  cursor: pointer;
+}
+
+/* 選中狀態 */
+.text-item.active span {
+  transform: scale(1.2); /* 稍微放大 */
+  background-color: #222;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+}
+
+/* 右側圖片項目 */
+.image-item {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 60px;
+  height: 60px;
+  margin-top: -30px;
+  margin-left: -30px;
+  /* 旋轉邏輯：先轉角度 -> 推出半徑 -> 轉90度讓圖片垂直於圓周 */
+  transform: rotate(var(--angle)) translate(var(--wheel-radius)) rotate(90deg);
+  
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid #fff;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.image-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 指示箭頭 */
+.indicator-arrow {
+    position: absolute;
+    top: -10px;
+    font-size: 20px;
+    color: #e74c3c;
+    z-index: 20;
+}
+.left-arrow { left: calc(var(--wheel-radius) + 20px); } /* 指向右邊 */
+.right-arrow { right: calc(var(--wheel-radius) + 20px); } /* 指向左邊 */
+
+
+/* --- Center Stage --- */
+.center-stage {
+  z-index: 5;
+  text-align: center;
+  max-width: 400px;
+}
+
+.main-logo { margin-bottom: 40px; }
+.logo-text { font-family: 'Playfair Display', serif; font-size: 48px; margin: 0; letter-spacing: 2px; }
+.logo-highlight { color: #e74c3c; }
+.logo-sub { font-size: 10px; letter-spacing: 4px; color: #777; margin-top: 5px; }
+
+.info-panel {
+  background: #fff;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.05);
+}
+
+.cuisine-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    margin: 0 0 10px;
+}
+
+.divider-line {
+    width: 40px;
+    height: 3px;
+    background: #e74c3c;
+    margin: 0 auto 20px;
+}
+
+.dish-preview-text {
+    color: #666;
+    margin-bottom: 30px;
+    line-height: 1.6;
+}
+
+.action-btn {
+    background: #222;
+    color: #fff;
+    border: none;
+    padding: 15px 40px;
+    border-radius: 50px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: transform 0.2s, background 0.2s;
+}
+.action-btn:hover { background: #000; transform: scale(1.05); }
+
+
+/* ... (保留原本 Screen 1 的樣式) ... */
+
+/* ... (保留原本 root, body, Screen 1 的樣式) ... */
+
+/* --- Screen 2: Animation Screen --- */
+.animation-screen {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-color: var(--bg-color);
+  z-index: 80;
+  /* 移除 overflow: hidden，讓 Matter.js canvas 可以正確顯示 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.animation-screen.hidden {
+  opacity: 0;
+  pointer-events: none;
+  /* 當隱藏時，確保它不會擋住滑鼠事件 */
+  visibility: hidden; 
+  transition: opacity 0.5s ease-in-out, visibility 0s linear 0.5s;
+}
+
+/* 【修改】確保容器佔滿空間 */
+#falling-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* 【移除】舊的 .falling-item 和 .pile-base 以及 @keyframes fallDown */
+/* 我們不再需要它們，因為 Matter.js 會處理 */
+
+
+/* 中間的文字 (調整層級，確保在 canvas 之上) */
+.curating-text {
+  position: absolute;
+  bottom: 15%;
+  font-family: 'Playfair Display', serif;
+  font-size: 24px;
+  color: #777;
+  letter-spacing: 2px;
+  animation: pulse 1.5s infinite alternate;
+  z-index: 90; /* 確保文字在掉落物體上面 */
+  background: rgba(255,255,255,0.7); /* 加個半透明背景讓文字更清楚 */
+  padding: 10px 20px;
+  border-radius: 20px;
+}
+@keyframes pulse { from { opacity: 0.7; } to { opacity: 1; }}
+
+/* --- Screen 3 (Result - 紅格子收據風格) --- */
+.result-screen {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.5s ease-in-out;
+
+  /* 紅色格紋背景 (Red Gingham Pattern) */
+  background-color: #fff;
+  background-image:
+    linear-gradient(90deg, rgba(231, 76, 60, 0.15) 50%, transparent 50%),
+    linear-gradient(rgba(231, 76, 60, 0.15) 50%, transparent 50%);
+  background-size: 50px 50px; /* 格子大小 */
+  z-index: 100; /* 確保在最上層 */
+  transition: transform 0.6s cubic-bezier(0.86, 0, 0.07, 1); 
+}
+.result-screen.hidden { transform: translateY(100%); }
+
+/* 主要佈局容器 */
+.result-layout {
+  display: flex;
+  width: 95%;
+  height: 90%;
+  max-width: 1400px;
+  gap: 40px;
+  padding: 20px;
+}
+
+/* --- 左側欄 (1/3) --- */
+.result-left-col {
+  flex: 1; /* 佔 1 份寬度 */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+}
+
+/* 筷子裝飾 (純 CSS 繪製) */
+.chopsticks-decoration {
+  position: absolute;
+  top: -20px;
+  left: 20px;
+  display: flex;
+  gap: 10px;
+  transform: rotate(-15deg); /* 稍微傾斜 */
+  z-index: 10;
+}
+.chopstick {
+  width: 12px;
+  height: 180px;
+  background: #d35400; /* 深木色 */
+  border-radius: 4px 4px 10px 10px; /* 上方平，下方尖 */
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+  position: relative;
+}
+/* 筷子尖端的裝飾環 */
+.chopstick::after {
+  content: '';
+  position: absolute;
+  bottom: 20px;
+  left: 0;
+  width: 100%;
+  height: 15px;
+  background: #f1c40f; /* 金色環 */
+}
+.c2 { margin-top: 20px; /* 讓兩根筷子錯開 */ }
+
+
+/* 收據容器 */
+.receipt-container {
+  background: #fff;
+  padding: 30px;
+  /* 使用等寬字體營造收據感 */
+  font-family: 'Courier New', Courier, monospace; 
+  color: #333;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  position: relative;
+  border-top: 5px solid #333; /* 收據頂部黑條 */
+  margin-top: 60px; /* 留空間給筷子 */
+}
+
+/* 收據頂部鋸齒效果 (選用，用 CSS mask 實現) */
+.receipt-container::before {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 100%;
+    height: 10px;
+    background: #fff;
+    /* 簡單的鋸齒邊緣 */
+    clip-path: polygon(0% 0%, 5% 100%, 10% 0%, 15% 100%, 20% 0%, 25% 100%, 30% 0%, 35% 100%, 40% 0%, 45% 100%, 50% 0%, 55% 100%, 60% 0%, 65% 100%, 70% 0%, 75% 100%, 80% 0%, 85% 100%, 90% 0%, 95% 100%, 100% 0%);
+}
+
+.receipt-header {
+    text-align: center;
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 20px;
+    line-height: 1.4;
+    color: #555;
+}
+
+.receipt-dish-name {
+    font-family: 'Playfair Display', serif; /* 菜名保留漂亮字體 */
+    font-size: 36px;
+    margin: 10px 0;
+    text-transform: uppercase;
+    text-align: left;
+}
+
+.receipt-divider {
+    border-bottom: 2px dashed #ccc; /* 虛線分隔 */
+    margin: 20px 0;
+}
+
+.receipt-label {
+    font-weight: bold;
+    font-size: 12px;
+    color: #777;
+}
+
+.receipt-desc {
+    font-size: 14px;
+    line-height: 1.6;
+    margin-top: 5px;
+}
+
+.receipt-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 18px;
+    font-weight: bold;
+}
+.price-row, .total-row {
+    display: flex;
+    justify-content: space-between;
+}
+.price-tag { color: #e74c3c; }
+
+.receipt-barcode {
+    text-align: center;
+    font-size: 24px;
+    letter-spacing: -2px;
+    margin-top: 30px;
+    opacity: 0.5;
+}
+
+/* 收據上的按鈕調整 */
+.receipt-back-btn {
+    width: 100%;
+    padding: 15px;
+    margin-top: 30px;
+    background: #333;
+    color: #fff;
+    border: none;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.receipt-back-btn:hover { background: #000; }
+
+.receipt-share {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+.receipt-share .social-btn {
+    width: auto;
+    padding: 8px 16px;
+    border: 1px solid #333;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    background: #fff;
+}
+.receipt-share .social-btn:hover {
+    background: #333;
+    color: #fff;
+}
+
+
+/* --- 右側欄 (2/3) --- */
+.result-right-col {
+  flex: 2; /* 佔 2 份寬度 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.big-image-container {
+  width: 80vh; /* 使用視窗高度的 80% 確保是大圓 */
+  height: 80vh;
+  max-width: 700px;
+  max-height: 700px;
+  border-radius: 50%;
+  border: 15px solid #fff; /* 白邊框讓它從格子背景跳出來 */
+  box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+  overflow: hidden;
+  /* 進場動畫 */
+  animation: scaleIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.big-image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@keyframes scaleIn {
+    from { transform: scale(0.5); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+/* RWD 手機版調整 */
+@media (max-width: 900px) {
+    .result-layout {
+        flex-direction: column-reverse; /* 手機版把圖片放上面，收據放下面 */
+        gap: 20px;
+        height: auto;
+        overflow-y: auto; /* 允許捲動 */
+    }
+    .result-right-col { flex: none; height: 400px; }
+    .big-image-container { width: 300px; height: 300px; border-width: 8px; }
+    .result-left-col { flex: none; }
+    .receipt-container { margin-top: 30px; }
+}

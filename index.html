@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Food Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+</head>
+<body>
+
+  <section id="screen-1" class="dashboard-screen">
+    <div class="wheel-anchor left-anchor">
+        <div class="wheel-container" id="cuisineWheel" data-rotation="0"></div>
+        <div class="indicator-arrow left-arrow">➤</div>
+    </div>
+    <div class="wheel-anchor right-anchor">
+        <div class="wheel-container" id="dishWheel" data-rotation="0"></div>
+        <div class="indicator-arrow right-arrow">◀</div>
+    </div>
+    <div class="center-stage">
+      <div class="main-logo">
+        <h1 class="logo-text">FOOD<span class="logo-highlight">LAB</span></h1>
+        <p class="logo-sub">CULINARY RANDOMIZER</p>
+      </div>
+      <div class="info-panel">
+        <h2 class="cuisine-title" id="displayTitle">KOREAN</h2>
+        <div class="divider-line"></div>
+        <p class="dish-preview-text" id="displayDesc">Ready to explore? Spin...</p>
+        <button id="spinBtn" class="action-btn">START SPINNING</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="screen-animation" class="animation-screen hidden">
+      <div id="falling-container"></div>
+      <h2 class="curating-text">Curating your dish...</h2>
+  </section>
+
+  <section id="screen-3" class="result-screen hidden">
+    <div class="result-layout">
+      <div class="result-left-col">
+        <div class="chopsticks-decoration">
+          <div class="chopstick c1"></div>
+          <div class="chopstick c2"></div>
+        </div>
+        <div class="receipt-container">
+           <div class="receipt-header">FOODLAB CULINARY RANDOMIZER<br>--- ORDER TICKET ---</div>
+           <h2 id="resultTitle" class="receipt-dish-name">Dish Name</h2>
+           <div class="receipt-divider"></div>
+           <div class="receipt-body">
+            <span class="receipt-label">ITEM DESC:</span>
+            <p id="resultDesc" class="receipt-desc">Description goes here...</p>
+          </div>
+          <div class="receipt-divider"></div>
+          <div class="receipt-footer">
+            <div class="price-row">
+              <span>PRICE:</span>
+              <span class="price-tag" id="resultPrice">$♥♥♥</span>
+            </div>
+            <div class="total-row">
+              <span>TOTAL DUE:</span>
+              <span>Pending Spin</span>
+            </div>
+          </div>
+          <div class="receipt-barcode">||| ||||| || |||| |||</div>
+           <button id="backBtn" class="receipt-back-btn">← SPIN AGAIN</button>
+           <div class="share-section receipt-share">
+             <button class="social-btn">FB</button>
+             <button class="social-btn">IG</button>
+             <button class="social-btn">X</button>
+           </div>
+        </div>
+      </div>
+      <div class="result-right-col">
+        <div class="big-image-container">
+          <img id="resultImage" src="" alt="Result Dish">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
